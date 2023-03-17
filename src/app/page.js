@@ -1,0 +1,28 @@
+import Results from "@/components/Results";
+
+// const API_KEY = process.env.API_KEY;
+const API_KEY="8379b7af4a675b6748b239853b0a2f43"
+
+export default async function Home({ searchParams }) {
+  const genre = searchParams.genre || "fetchTrending";
+  const res = await fetch(
+    `https://api.themoviedb.org/3/${
+      genre === "fetchTopRated" ? "movie/top_rated" : "trending/all/week"
+    }?api_key=${API_KEY}&language=en-US&page=1`,
+    {
+      next: { revalidate: 100000 },
+    }
+  );
+  if (!res.ok) {
+    throw new Error("Failed To Load Movie Data");
+  }
+  const data = await res.json();
+  const results = data.results;
+  return (
+    <>
+      <div>
+        <Results results={results} />
+      </div>
+    </>
+  );
+}
